@@ -3,7 +3,7 @@
 
 #include "global_vars.h"
 
-void execute(void);
+int execute(void);
 
 // defenitions for the functions that perform the opration of each opcode.
 

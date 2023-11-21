@@ -10,3 +10,5 @@ int reti_flag;
 int inst_code;
 int timer_turn_on;
 struct instruction inst;
+FILE* curr_file;
+int cycles;

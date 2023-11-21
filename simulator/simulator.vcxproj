@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="execute.c" />
+    <ClCompile Include="file_utils.c" />
     <ClCompile Include="global_vars.c" />
     <ClCompile Include="sim_utils.c" />
     <ClCompile Include="simulator.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="execute.h" />
+    <ClInclude Include="file_utils.h" />
     <ClInclude Include="sim_utils.h" />
     <ClInclude Include="global_vars.h" />
   </ItemGroup>

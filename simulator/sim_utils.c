@@ -6,16 +6,6 @@
 #include "global_vars.h"
 #include "sim_utils.h"
 
-void intToHexCharArray(int num, char* hexArray) { //takes an integer and makes a hexadecimal representation
-    sprintf(hexArray, "%08X", num);
-    int length = strlen(hexArray);
-    for (int i = 0; i < length; i++) {
-        if (hexArray[i] >= 'a' && hexArray[i] <= 'f') { //makes the small letters into a big one
-            hexArray[i] = hexArray[i] - 32;
-        }
-    }
-}
-
 int get_bits(int n, int mask, unsigned int num) {
     // used to retrieve certain bits from an interger variable num.
     // the mask chooses which bits to select
@@ -42,48 +32,6 @@ int get_imm_bits(int n, int mask, int num) {
     }
 
     return num;
-
-}
-
-
-void load_mem(FILE* file) {
-    // load the memin.txt to the mem array
-
-    char str[10];
-    int i = 0;
-
-    while (fgets(str, 10, file) != NULL) {
-        // read each line in the file and convert to int to put in the mem array    
-        mem[i] = (int)strtoul(str, NULL, 16);
-        i++;
-    }
-
-    for (i; i < 512; i++) {
-        // fill rest of memory with zeros.
-        mem[i] = 0;
-    }
-
-
-}
-
-
-void init(FILE* file) {
-    // set the initial value of regs
-    for (int i = 0; i < 16; i++)
-    {
-        reg[i] = 0;
-    }
-    for (int i = 0; i < 14; i++)
-    {
-        ioreg[i] = 0;
-    }
-    // set the initial value of PC
-    pc = 0;
-    // set the initial value of reti_flag
-    reti_flag = 0;
-    // load the memin file to the memory
-    load_mem(file);
-
 
 }
 
@@ -123,5 +71,43 @@ void decode(void) {
 
     // put the imm value in reg[1]
     reg[1] = inst.imm;
+
+}
+
+void clk(void) {
+    if (ioreg[8] == 0xffffffff) { // check if clk reached max
+        ioreg[8] = 0; // zero clk
+    }
+    else {
+        ioreg[8] = ioreg[8] + 1; // increment clk
+    }
+}
+
+void timer(void) {
+    if (ioreg[12] == ioreg[13] && ioreg[0] == 1 && ioreg[11]) { // check if timer reached max value
+
+        ioreg[3] = 1; // trigger irq0
+        ioreg[12] = 0; // zero the timer
+
+    }
+    else if (ioreg[11]) { // check if timer is enabled
+
+        if (timer_turn_on)
+            timer_turn_on = 0;
+        else
+            ioreg[12] = ioreg[12] + 1; // increment the timer
+
+    }
+}
+
+void interrupt(void) {
+
+    // this is the condition from page 5 in the assignment
+    if (((ioreg[0] && ioreg[3]) || (ioreg[1] && ioreg[4]) || (ioreg[2] && ioreg[5])) && !reti_flag) {
+        reti_flag = 1; // signal that currently in interrupt handler
+        ioreg[7] = pc; // save the return address in irqreturn
+        pc = ioreg[6]; // jump to irqhandler
+
+    }
 
 }

@@ -4,7 +4,7 @@
 
 // for each function perform the operation of the opcode and increment the PC appropriately
 
-void execute(void) {
+int execute(void) {
 
     // execute the instruction
 
@@ -96,6 +96,8 @@ void execute(void) {
 
 
 	reg[0] = 0;
+
+	return inst.opcode;
 }
 
 
